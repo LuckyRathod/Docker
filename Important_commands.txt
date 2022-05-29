@@ -1,0 +1,323 @@
+## To check WSL Version 
+
+CMD > wsl -l -v 
+
+## IF WSL Version - 1 , Install wsl2 or update Ubuntu and Docker Desktop
+
+## To check Docker Version
+
+CMD > docker --version
+
+## Docker Basic Commands 
+
+1. Start Container using image
+
+> docker run name_of_image (It create a new container everytime. Container will be created with image pulled or found locally)
+
+Example : docker run -d -p 80:80 docker/getting-started
+Example : docker run nginx
+
+2. List Container 
+
+> docker ps (It will only show running containers)
+> docker ps -a (It will show all exited and running containers)
+
+3. Start a Container 
+
+> docker start name1_of_containers (Attach Mode - Name can be found in "Names" column of "docker ps")
+
+3.A  Run Specific already created Container - But in interactive mode
+
+> docker start -i 9835047230a2 (Attach interacitve mode)
+
+3. Stop a Container 
+
+> docker stop name_of_container (Name can be found in "Names" column of "docker ps")
+
+Example : docker stop serene_diffie
+
+4. Delete a Container 
+
+## Before deleting make sure that container is in STOP Mode
+
+> docker rm serene_diffie (Container will be deleted and it will also not get shown in "docker ps -a")
+
+5. List Images 
+
+> docker images
+
+6. Delete Image 
+
+> docker rmi repository_name_of_image_available (Images available from "docker images")
+
+Example : docker rmi docker/getting-started
+
+7. Pull an image 
+
+## When you run "doker run nginx" - It will first search locally . If not found then it will pull an image online - Docker HUB
+
+>docker run nginx (It will create the container and run for you.)
+
+
+8. Only pull an image , But dont run it in container 
+
+>docker pull nginx
+
+9. Ubuntu Container 
+
+> docker run ubuntu (It will get download , And then it will get exited - Check using "docker ps -a")
+
+## Docker is not supposed to host OS . It is only meant to run process 
+
+## Start the ubuntu container and run command "sleep 5"
+
+> docker run ubuntu sleep 5 (You will be able to see "sleep 5" in command column of "docker ps -a")
+
+10. If you want to know more about whats happening in backgrounf of "sleep 5"
+
+## Run the container > docker run ubuntu sleep 120 
+
+## Make sure in Docker Desktop - Settings - Resources - WSL integration - Enable integration with addition WSL distro - ubuntu 20.0.4 
+
+## Open WSL Ubuntu and RUN Ubuntu commands . Ubuntu commands will only get execute when Container is running . If it is not running then you wont be able to run commands
+
+## If WSL is integrated - You can directly run this from Ubuntu 
+
+~$docker ps
+
+~$docker exec 86b39414ae82 cat /etc/hosts
+
+~$docker exec 86b39414ae82 cat /etc/*release*
+
+## If you are opening from Docker Desktop - CLI . Then you dont neet to write "docker exec 86b39414ae82" .
+
+# /bin/bash
+# cat /etc/hosts
+# cat /etc/*release*
+
+11. Two Modes of running container
+
+- Attach Mode (Your CMD will be running container . You wont be able to run other docker commands in same cmd)
+> docker run ubuntu sleep 120
+
+## If you already have container ID 
+
+> docker start 7de5a50d955f
+> docker attach 7de5a50d955f (You wont be able to run any other commands)
+
+
+
+- Dettach Mode (Container will be running in background . You can run other commands)
+> docker run -d ubuntu sleep 120
+
+## So once you work in dettach mode . You can directly run Ubuntu Commands on the same cmd 
+
+## So complete Flow will look like 
+
+> docker run -d ubuntu sleep 120
+> docker ps (You will get container ID for above cmd)
+> docker exec 3b2d84d97f87 cat /etc/hosts
+
+12. Running Commands Inside Container
+
+## Running cmds directly in bash -- it : interactive (So even if you are running container in attach mode .You will get interactive input window . It gives you pseudo terminal)
+
+> docer run -it ubuntu bash 
+# cat /etc/hosts (You can run Linux commands directly in same cmd)
+
+## Exiting above interactive container 
+
+# exit 
+
+### DOCKER RUN --- FEATURES AND IMP COMMANDS 
+
+13. Using TAGS 
+
+Search Docker Alpine in Google to get different Tags 
+
+> docker run alpine (By Default alpine with "latest" tag is run)
+
+### Run Specific version of image
+
+>docker run alpine:3.12.8
+
+14. Standard Input 
+
+## If your image contains any standard input request . Then you should run the container in Interactive mode 
+
+> docker run -i image_name 
+
+OR
+
+> docker run -it image_name 
+
+15. PORT Mapping 
+
+## If your app in container is running on IP Address - 172.17.0.2:5000. It is not accessible to outside world . Unless and untill it is mapped 
+
+> docker run -p 8080:5000 image_name
+
+16. VOLUME Mapping
+
+## Let assume we have mysql container - It stores data in /var/lib/mysql
+## Now If incase you stop the container or Remove the container . It means that your data stored in /var/lib/mysql will also get deleted.
+## So for that type of problem . We can create Persistent storage in ubuntu where we will dump our data from above path to the ubuntu path
+
+~$ pwd (o/p - /home/lucky)
+~$ mkdir data
+~$ cd data
+
+~$ docker run mysql
+
+## Running container with volume mapping 
+
+## All data from /var/lib/mysql will get saved in /home/lucky/data
+
+~/data$ docker run -v /home/lucky/data:/var/lib/mysql mysql
+
+17. Docker RUN - Inspect -- Gives complete information about container
+
+> docker inspect 9835047230a2
+
+18. Docker RUN - Logs
+
+> docker logs 9835047230a2
+
+19. Docker Image (DockerFile) - Refer Docker File Sample
+
+## It is a layered architecture - Every step acts as a different layer.
+## Caching mechanism is also used in eah steps/layer
+
+## Every Docker File consist of Two Things - Instructions , Arguments 
+## IMP Instructions in Docker File 
+
+- FROM 
+- RUN 
+- WORKDIR
+- COPY
+- ENTRYPOINT
+
+20. Docker Build 
+
+## It starts executing the layers/steps mentioned in Dockfile.
+
+> docker build Dockerfile -t name_of_your_choice_for_container
+
+21. Docker Push 
+
+> docker push name_of_your_choice_for_container
+
+22. Creating Custom Image - Basic Sample -- Refer Basic_Sample/app.py
+
+## Before creating DockerFile . We will manually do all steps by creating container 
+
+## Open cmd - Project which is to be containerized
+
+> cd path_to_project
+> docker run -p 8000:5000 -it ubuntu bash
+
+# apt-get update
+# apt-get install -y python3
+# apt-get install -y python3-pip
+# pip3 install flask
+
+## Copy your simple flask app.py code
+
+# cd /opt/
+# apt-get install nano
+# nano app.py (Create a file) - Paste code - ctrl + 0 , Enter , ctrl + X , Filename 
+# python3 app.py (ctrl + c - install curl)
+# apt-get install curl
+
+## Open another CLI from Docker Desktop w.r.t container 
+
+# curl --location --request GET 'http://127.0.0.1:5000/'
+# curl --location --request GET 'http://127.0.0.1:5000/container'
+
+
+# history (It will help you to get all commands run by you)
+
+23. Creating Custom Image - Flask App
+
+## Create Docker File 
+
+> cd path_where_docker_file_is
+
+## Docker Login 
+
+>docker login 
+
+
+> docker build . -t docker_login_username/salpred
+
+## Image will be created 
+
+>docker images
+
+>docker run -p 8080:5000 docker_login_username/salpred (Check whether your application is running)
+
+>docker push docker_login_username/salpred
+
+24. Using Env variables
+
+> docker build . -t username/imagename
+
+> docker run -e MY_USER=lucky -e MY_PASS=123 username/imagename
+
+OR 
+
+> docker run --env-file .env username/imagename
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
