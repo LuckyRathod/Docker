@@ -269,6 +269,87 @@ OR
 > docker run --env-file .env username/imagename
 
 
+25. Commands and Entrypoints
+
+## Command - Command line parameters will be replaced
+
+> docker run ubuntu sleep 30 (Here our Container will run only for 30 secs)
+
+## Same command can also be written in DockerFile 
+
+/** DOCKER FILE
+
+FROM ubuntu
+CMD sleep 30 (sleep is executable , 30 is parameter)
+
+**/
+
+OR 
+
+/** DOCKER FILE
+
+FROM ubuntu
+CMD ["sleep","30"]
+
+**/
+
+> docker build . -t username/imagename
+
+> docker run username/imagename
+
+## In COMMAND the parameter value written in Docker file - cmd will get replaced
+
+> docker run -d username/imagename sleep 40
+
+## Now if you dont want to enter the cmd sleep in above cmd . ENTRY POINT comes into the picture . Where you will only mention parameter value i-e 40
+
+/** DOCKER FILE
+
+FROM ubuntu
+CMD ["sleep","30"]
+
+**/
+
+## Entrypoints - Command line parameters will be appended 
+
+/** DOCKER FILE
+
+FROM ubuntu
+ENTRYPOINT ["sleep"]
+
+**/
+
+> docker build . -t username/imagename
+
+> docker run -d username/imagename 40
+
+## In ENTRYPOINT the parameter value written in Docker file - ENTRYPOINT will get appended
+
+## If you dont write any value while running docker . You will get error. When you are using ENTRYPOINT i-e sleep : missing operand.
+
+## To overcome above problem . We use CMD parallel . i-e This will only get execute when value is not passed while running docker .
+
+/** DOCKER FILE
+
+FROM ubuntu
+ENTRYPOINT ["sleep"]
+CMD ["30"]
+
+**/
+> docker build . -t username/imagename
+
+> docker run username/imagename (30 will be used)
+
+> docker run username/imagename 40 (40 will be used)
+
+## Directly using entrypoint while running docker
+
+> docker run -d --entrypoint sleep username/imagename 40
+
+
+
+
+
 
 
 
