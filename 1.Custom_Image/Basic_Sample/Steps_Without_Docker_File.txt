@@ -1,0 +1,22 @@
+If we dont use docker file , Then we will have to run all commands manually in cmd
+
+> cd path_to_project
+> docker run -p 8000:5000 -it ubuntu bash
+
+# apt-get update
+# apt-get install -y python3
+# apt-get install -y python3-pip
+# pip3 install flask
+
+## Copy your simple flask app.py code
+
+# cd /opt/
+# apt-get install nano
+# nano app.py (Create a file) - Paste code - ctrl + 0 , Enter , ctrl + X , Filename 
+# python3 app.py 
+# apt-get install curl
+
+## Open another CLI from Docker Desktop w.r.t container 
+
+# curl --location --request GET 'http://127.0.0.1:5000/'
+# curl --location --request GET 'http://127.0.0.1:5000/container'

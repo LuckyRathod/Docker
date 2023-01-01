@@ -1,0 +1,9 @@
+services:
+  webapp:
+    image:"username/imagename"   
+  db:
+  image:"cassandra"  
+  message:
+    image:"redis" 
+  orchestration:
+    image:"ansible" 

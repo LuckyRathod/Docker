@@ -1,0 +1,28 @@
+version: 2
+services:
+  redis:
+    image: redis
+
+  db:
+    image: postgres
+
+  vote_app:
+    build: ./vote 
+    ports:
+      - "6000:80"
+    depend_on:
+      - redis
+
+  result:
+    build: ./result
+    ports:
+      - "6001:80"
+    depend_on:
+      - db
+
+  worker:
+    build: ./worker
+    depend_on:
+      - redis
+      - db
+

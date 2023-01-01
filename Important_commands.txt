@@ -120,7 +120,8 @@ Example : docker rmi docker/getting-started
 
 12. Running Commands Inside Container
 
-## Running cmds directly in bash -- it : interactive (So even if you are running container in attach mode .You will get interactive input window . It gives you pseudo terminal)
+## Running cmds directly in bash -- it : interactive 
+(So even if you are running container in attach mode .You will get interactive input window . It gives you pseudo terminal)
 
 > docer run -it ubuntu bash 
 # cat /etc/hosts (You can run Linux commands directly in same cmd)
@@ -167,13 +168,21 @@ OR
 ~$ mkdir data
 ~$ cd data
 
-~$ docker run mysql
+OR 
+
+Make directory data in d drive
+
+~$ docker run -e MYSQL_ROOT_PASSWORD=password mysql
 
 ## Running container with volume mapping 
 
-## All data from /var/lib/mysql will get saved in /home/lucky/data
+## All data from /var/lib/mysql will get saved in /home/lucky/data or /d/data
 
 ~/data$ docker run -v /home/lucky/data:/var/lib/mysql mysql
+
+OR
+
+> docker run -v /d/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password mysql
 
 17. Docker RUN - Inspect -- Gives complete information about container
 
@@ -346,59 +355,88 @@ CMD ["30"]
 
 > docker run -d --entrypoint sleep username/imagename 40
 
+##### Example #####
+
+https://github.com/dockersamples/example-voting-app
 
 
+26. Maintaining Naming conventions
+
+## name_for_yourcontainer will then be used in docker compose or maintaining conn
+
+> docker run --name = name_for_yourcontainer imagename
+
+> docker run --name=redis redis
+> docker run --name=db postgres
+
+27. Creating connection/link while creating containers
 
 
+## When you run vote_app . You will see that there is link with redis
+
+## Assume your vote_app is running on 80 in container . For outside world we will do port mapping to 6000
+
+## name_for_yourcontainer can be redis as per voting app arch
+
+> docker run --name = name_for_your_curr_container -p 6000:80 --link name_for_your_exis_container_to_link_to_curr_cont imagename
+
+Eg > docker run -d  --name=voting-app-container --link redis:redis -p 5000:80 voting-app
+Eg > docker run -d  --name=result-app-container --link db:db -p 5001:80 result-app
+
+## If there are multiple linkages to the containers 
+
+Eg > docker run -d  --name=worker-app-container --link redis:redis --link db:db worker-app
+
+## So Instead of writting all above commands (26 & 27) . We will create docker-compose
+
+Refer :
+
+- Docker-Compose-Sample/docker-compose-vote-app-eg_without_build
+
+- Docker-Compose-Sample/docker-compose-vote-app-eg_with_build
+
+(In above yml file . We have mentioned "build" instead of "image" . Build (Mentioned path of DockerFile . So that it will build the image from that docker file))
+
+Refer Docker-Compose-Sample  
+
+28. Docker Compose Networks
+
+Refer docker-compose-vote-app-with-build-and-network-v2
+
+29. Voting application using Docker RUN
+
+> cd voting_app_master
+
+> docker run -d --name=redis redis
+
+## Create image from dockerfile from vote dir
+
+> cd vote
+> docker build . -t voting-app
+> cd ..
+
+> docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --name=db postgres:9.4
+
+## Create image from dockerfile from worker dir
+
+> cd worker
+> docker build . -t worker-app
+> cd ..
+
+## Create image from dockerfile from result dir
+
+> cd result
+> docker build . -t result-app
+> cd ..
+
+## Create Container from images created
+
+> docker run -d  --name=voting-app-container --link redis:redis -p 5000:80 voting-app
+> docker run -d  --name=result-app-container --link db:db -p 5001:80 result-app
+> docker run -d  --name=worker-app-container --link redis:redis --link db:db worker-app
 
 
+30. Voting application using Docker Compose
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+> cd master
+> docker-compose up
